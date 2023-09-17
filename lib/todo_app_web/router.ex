@@ -69,6 +69,13 @@ defmodule TodoAppWeb.Router do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
     end
+
+    live "/todos", TodoLive.Index, :index
+    live "/todos/new", TodoLive.Index, :new
+    live "/todos/:id/edit", TodoLive.Index, :edit
+
+    live "/todos/:id", TodoLive.Show, :show
+    live "/todos/:id/show/edit", TodoLive.Show, :edit
   end
 
   scope "/", TodoAppWeb do
