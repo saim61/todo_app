@@ -2,6 +2,7 @@ defmodule TodoAppWeb.TodoLive.ChangeUserFormComponent do
   use TodoAppWeb, :live_component
 
   alias TodoApp.{Items, Accounts}
+  alias TodoAppWeb.TodoLive.Shared
 
   @impl true
   def render(assigns) do
@@ -46,13 +47,11 @@ defmodule TodoAppWeb.TodoLive.ChangeUserFormComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign_form(changeset)}
+     |> Shared.assign_form(changeset)}
   end
 
   @impl true
-  def handle_event("validate", _params, socket) do
-    {:noreply, socket}
-  end
+  def handle_event("validate", _params, socket), do: {:noreply, socket}
 
   def handle_event(
         "save",
@@ -60,27 +59,6 @@ defmodule TodoAppWeb.TodoLive.ChangeUserFormComponent do
         socket
       ) do
     selected_user_id = Accounts.get_user_by_email(selected_user).id
-    save_todo(socket, socket.assigns.action, %{user_id: selected_user_id})
+    Shared.save_todo(:edit, socket, %{user_id: selected_user_id}, self(), __MODULE__)
   end
-
-  defp save_todo(socket, :change_user, todo_params) do
-    case Items.update_todo(socket.assigns.todo, todo_params) do
-      {:ok, todo} ->
-        notify_parent({:saved, todo})
-
-        {:noreply,
-         socket
-         |> put_flash(:info, "Todo updated successfully")
-         |> redirect(to: "/todos/all")}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
-    end
-  end
-
-  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
-    assign(socket, :form, to_form(changeset))
-  end
-
-  defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 end

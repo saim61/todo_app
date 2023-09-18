@@ -2,6 +2,7 @@ defmodule TodoAppWeb.TodoLive.FormComponent do
   use TodoAppWeb, :live_component
 
   alias TodoApp.Items
+  alias TodoAppWeb.TodoLive.Shared
 
   @impl true
   def render(assigns) do
@@ -51,7 +52,7 @@ defmodule TodoAppWeb.TodoLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign_form(changeset)}
+     |> Shared.assign_form(changeset)}
   end
 
   @impl true
@@ -61,7 +62,7 @@ defmodule TodoAppWeb.TodoLive.FormComponent do
       |> Items.change_todo(todo_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign_form(socket, changeset)}
+    {:noreply, Shared.assign_form(socket, changeset)}
   end
 
   def handle_event(
@@ -69,42 +70,6 @@ defmodule TodoAppWeb.TodoLive.FormComponent do
         %{"todo" => todo_params},
         socket
       ) do
-    save_todo(socket, socket.assigns.action, todo_params)
+    Shared.save_todo(socket.assigns.action, socket, todo_params, self(), __MODULE__)
   end
-
-  defp save_todo(socket, :edit, todo_params) do
-    case Items.update_todo(socket.assigns.todo, todo_params) do
-      {:ok, todo} ->
-        notify_parent({:saved, todo})
-
-        {:noreply,
-         socket
-         |> put_flash(:info, "Todo updated successfully")
-         |> push_patch(to: socket.assigns.patch)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
-    end
-  end
-
-  defp save_todo(%{assigns: %{current_user: current_user}} = socket, :new, todo_params) do
-    case Items.create_todo(Map.put(todo_params, "user_id", current_user.id)) do
-      {:ok, todo} ->
-        notify_parent({:saved, todo})
-
-        {:noreply,
-         socket
-         |> put_flash(:info, "Todo created successfully")
-         |> push_patch(to: socket.assigns.patch)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
-    end
-  end
-
-  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
-    assign(socket, :form, to_form(changeset))
-  end
-
-  defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 end
