@@ -1,5 +1,5 @@
 <.header>
-  Listing Todos
+  Todos for <%= @current_user.first_name %>
   <:actions>
     <.link patch={~p"/todos/new"}>
       <.button>New Todo</.button>

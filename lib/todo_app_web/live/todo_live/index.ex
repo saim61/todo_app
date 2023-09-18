@@ -9,7 +9,7 @@ defmodule TodoAppWeb.TodoLive.Index do
 
     {:ok,
      socket
-     |> stream(:todos, Items.list_todos())
+     |> stream(:todos, Items.list_todos(current_user))
      |> assign(current_user: current_user)}
   end
 

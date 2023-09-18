@@ -17,8 +17,11 @@ defmodule TodoApp.Items do
       [%Todo{}, ...]
 
   """
-  def list_todos do
-    Repo.all(Todo)
+  def list_todos(current_user) do
+    from(t in Todo,
+      where: ^current_user.id == t.assigned_user,
+    )
+    |> Repo.all()
   end
 
   @doc """
