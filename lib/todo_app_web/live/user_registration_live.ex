@@ -56,7 +56,7 @@ defmodule TodoAppWeb.UserRegistrationLive do
   end
 
   def handle_event("save", %{"user" => user_params}, socket) do
-    case Accounts.register_user(user_params) do
+    case Accounts.register_user(modify_user_params(user_params)) do
       {:ok, user} ->
         {:ok, _} =
           Accounts.deliver_user_confirmation_instructions(
@@ -85,5 +85,15 @@ defmodule TodoAppWeb.UserRegistrationLive do
     else
       assign(socket, form: form)
     end
+  end
+
+  defp modify_user_params(
+         %{"email" => email, "first_name" => first_name, "last_name" => last_name} = user_params
+       ) do
+    Map.merge(user_params, %{
+      "email" => String.downcase(email),
+      "first_name" => String.capitalize(first_name),
+      "last_name" => String.capitalize(last_name)
+    })
   end
 end

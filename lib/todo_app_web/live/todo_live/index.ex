@@ -9,7 +9,7 @@ defmodule TodoAppWeb.TodoLive.Index do
 
     {:ok,
      socket
-     |> stream(:todos, Items.list_todos(current_user))
+     |> stream(:todos, Items.list_todos_of_user(current_user))
      |> assign(current_user: current_user)}
   end
 
@@ -27,7 +27,7 @@ defmodule TodoAppWeb.TodoLive.Index do
   defp apply_action(%{assigns: %{current_user: current_user}} = socket, :new, _params) do
     socket
     |> assign(:page_title, "New Todo")
-    |> assign(:todo, %Todo{assigned_user: current_user.id})
+    |> assign(:todo, %Todo{user_id: current_user.id})
     |> assign(current_user: socket.assigns.current_user)
   end
 

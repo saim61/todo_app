@@ -88,7 +88,7 @@ defmodule TodoAppWeb.TodoLive.FormComponent do
   end
 
   defp save_todo(%{assigns: %{current_user: current_user}} = socket, :new, todo_params) do
-    case Items.create_todo(Map.put(todo_params, "assigned_user", current_user.id)) do
+    case Items.create_todo(Map.put(todo_params, "user_id", current_user.id)) do
       {:ok, todo} ->
         notify_parent({:saved, todo})
 

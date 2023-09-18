@@ -9,19 +9,22 @@ defmodule TodoApp.Items do
   alias TodoApp.Items.Todo
 
   @doc """
-  Returns the list of todos.
-
-  ## Examples
-
-      iex> list_todos()
-      [%Todo{}, ...]
-
+  Returns the list of todos of all users.
   """
-  def list_todos(current_user) do
+  def list_todos() do
+    Repo.all(Todo)
+    |> Repo.preload(:user)
+  end
+
+  @doc """
+  Returns the list of todos of current user.
+  """
+  def list_todos_of_user(current_user) do
     from(t in Todo,
-      where: ^current_user.id == t.assigned_user,
+      where: ^current_user.id == t.user_id
     )
     |> Repo.all()
+    |> Repo.preload(:user)
   end
 
   @doc """

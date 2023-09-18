@@ -2,12 +2,14 @@ defmodule TodoApp.Items.Todo do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias TodoApp.Accounts.User
+
   schema "todos" do
-    field(:date, :date)
+    field(:date, :date, default: Date.utc_today())
     field(:description, :string)
     field(:priority, Ecto.Enum, values: [:low, :medium, :high], default: :low)
     field(:title, :string)
-    field(:assigned_user, :id)
+    belongs_to(:user, User)
     field(:is_complete, :boolean, default: false)
 
     timestamps()
@@ -17,7 +19,7 @@ defmodule TodoApp.Items.Todo do
   @doc false
   def changeset(todo, attrs) do
     todo
-    |> cast(attrs, @fields ++ [:assigned_user, :is_complete])
+    |> cast(attrs, @fields ++ [:user_id, :is_complete])
     |> validate_required(@fields)
     |> validate_date()
   end

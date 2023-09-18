@@ -7,11 +7,11 @@ defmodule TodoApp.Repo.Migrations.CreateTodos do
       add :description, :string
       add :priority, :string
       add :date, :date
-      add :assigned_user, references(:users, on_delete: :nothing)
+      add :user_id, references(:users, on_delete: :nothing)
 
       timestamps()
     end
 
-    create index(:todos, [:assigned_user])
+    create index(:todos, [:user_id])
   end
 end
