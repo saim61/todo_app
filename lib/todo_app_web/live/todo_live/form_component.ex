@@ -28,6 +28,13 @@ defmodule TodoAppWeb.TodoLive.FormComponent do
           prompt="Choose a value"
           options={Ecto.Enum.values(TodoApp.Items.Todo, :priority)}
         />
+        <.input
+          field={@form[:is_complete]}
+          type="select"
+          label="Is this task complete?"
+          prompt="Choose a value"
+          options={[true, false]}
+        />
         <.input field={@form[:date]} type="date" label="Date" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Todo</.button>
