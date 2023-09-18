@@ -17,4 +17,23 @@
   <:col :let={{_id, todo}} label="Priority"><%= todo.priority %></:col>
   <:col :let={{_id, todo}} label="Date"><%= todo.date %></:col>
   <:col :let={{_id, todo}} label="Complete"><%= todo.is_complete %></:col>
+
+  <:action :let={{_id, todo}}>
+    <.link patch={~p"/todos/#{todo}/change_user"}>
+        Assign to someone else
+    </.link>
+  </:action>
 </.table>
+
+<.modal :if={@live_action in [:change_user]} id="todo-modal" show on_cancel={JS.patch(~p"/todos/all")}>
+  <.live_component
+    module={TodoAppWeb.TodoLive.ChangeUserFormComponent}
+    id={@todo.id || :change_user}
+    title={@page_title}
+    action={@live_action}
+    todo={@todo}
+    current_user={@current_user}
+    all_users={@all_users}
+    patch={~p"/todos"}
+  />
+</.modal>

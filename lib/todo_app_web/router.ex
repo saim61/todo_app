@@ -77,6 +77,9 @@ defmodule TodoAppWeb.Router do
 
     live "/todos/:id", TodoLive.Show, :show
     live "/todos/:id/show/edit", TodoLive.Show, :edit
+
+    live "/todos/all", TodoLive.AllUsers, :index
+    live "/todos/:id/change_user", TodoLive.AllUsers, :change_user
   end
 
   scope "/", TodoAppWeb do

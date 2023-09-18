@@ -41,7 +41,7 @@ defmodule TodoApp.Items do
       ** (Ecto.NoResultsError)
 
   """
-  def get_todo!(id), do: Repo.get!(Todo, id)
+  def get_todo!(id), do: Repo.get!(Todo, id) |> Repo.preload(:user)
 
   @doc """
   Creates a todo.
