@@ -1,6 +1,9 @@
 defmodule TodoAppWeb.TodoLive.AllUsers do
   use TodoAppWeb, :live_view
 
+  import TodoAppWeb.TodoLive.Shared,
+    only: [sort_via_priority_component: 1, sort_todos_by_priority: 2]
+
   alias TodoApp.{Items, Items, Accounts}
 
   @impl true
@@ -36,5 +39,14 @@ defmodule TodoAppWeb.TodoLive.AllUsers do
   @impl true
   def handle_info({TodoAppWeb.TodoLive.ChangeUserFormComponent, {:saved, todo}}, socket) do
     {:noreply, stream_insert(socket, :todos, todo)}
+  end
+
+  @impl true
+  def handle_event(
+        "sort_via_priority",
+        %{"priority" => priority},
+        socket
+      ) do
+    {:noreply, sort_todos_by_priority(socket, priority)}
   end
 end

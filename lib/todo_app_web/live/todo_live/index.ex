@@ -3,6 +3,9 @@ defmodule TodoAppWeb.TodoLive.Index do
 
   alias TodoApp.{Items, Items.Todo, Accounts}
 
+  import TodoAppWeb.TodoLive.Shared,
+    only: [sort_via_priority_component: 1, sort_todos_by_priority: 3]
+
   @impl true
   def mount(_params, session, socket) do
     current_user = Accounts.get_user_by_session_token(session["user_token"])
@@ -48,5 +51,13 @@ defmodule TodoAppWeb.TodoLive.Index do
     {:ok, _} = Items.delete_todo(todo)
 
     {:noreply, stream_delete(socket, :todos, todo)}
+  end
+
+  def handle_event(
+        "sort_via_priority",
+        %{"priority" => priority},
+        %{assigns: %{current_user: current_user}} = socket
+      ) do
+    {:noreply, sort_todos_by_priority(socket, priority, current_user)}
   end
 end

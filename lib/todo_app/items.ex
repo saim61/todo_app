@@ -28,6 +28,27 @@ defmodule TodoApp.Items do
   end
 
   @doc """
+  Returns the todos for all users by priority
+  """
+  def list_all_todos_by_priority(priority) do
+    from(t in Todo)
+    |> where([t], t.priority == ^priority)
+    |> Repo.all()
+    |> Repo.preload(:user)
+  end
+
+  @doc """
+  Returns the todos for current user by priority
+  """
+  def list_user_todos_by_priority(priority, user_id) do
+    from(t in Todo)
+    |> where([t], t.priority == ^priority)
+    |> where([t], t.user_id == ^user_id)
+    |> Repo.all()
+    |> Repo.preload(:user)
+  end
+
+  @doc """
   Gets a single todo.
 
   Raises `Ecto.NoResultsError` if the Todo does not exist.
