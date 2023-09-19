@@ -38,5 +38,9 @@ defmodule TodoAppWeb.TodoLive.Shared do
     assign(socket, :form, to_form(changeset))
   end
 
+  def get_file_extension(filename) do
+    Regex.run(~r/\.[A-Za-z]+/, filename, capture: :first) |> hd()
+  end
+
   defp notify_parent(id, module, msg), do: send(id, {module, msg})
 end

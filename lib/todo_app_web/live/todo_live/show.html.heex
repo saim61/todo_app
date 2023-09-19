@@ -14,6 +14,12 @@
   <:item title="Priority"><%= @todo.priority %></:item>
   <:item title="Completed"><%= @todo.is_complete %></:item>
   <:item title="Date"><%= @todo.date %></:item>
+  <:item title="Uploaded files">
+    <%= for file <- @todo.uploaded_files do %>  
+      <a><%= file %></a>
+      <br>
+    <% end %>
+  </:item>
 </.list>
 
 <.back navigate={~p"/todos"}>Back to todos</.back>
