@@ -28,6 +28,33 @@
 
 <.back navigate={~p"/todos"}>Back to todos</.back>
 
+<%= for comment <- @comments do %>
+  <.list>
+    <:item title="Comment"><%= comment.body %></:item>
+    <:item title="By"><%= comment.user.first_name %></:item>
+  </.list>
+  <%= if comment.user_id == @current_user.id do %>
+    <.button phx-click="delete_comment" phx-value-comment_id={comment.id} data-confirm="Are you sure you want to delete the comment?"> Delete Comment </.button>
+  <% end %>
+<% end %>
+
+<.form :let={f} for={@comment_changeset} phx-submit="post_comment">
+  <.input
+    field={f[:todo_id]}
+    type="hidden"
+    id="hidden_todo_id"
+    value={@todo.id}
+  />
+  <.input
+    field={f[:user_id]}
+    type="hidden"
+    id="hidden_user_id"
+    value={@current_user.id}
+  />
+  <.input field={f[:body]} type="text" label="Comment"/>
+  <.button phx-disable-with="Saving...">Add comment</.button>
+</.form>
+
 <.modal :if={@live_action == :edit} id="todo-modal" show on_cancel={JS.patch(~p"/todos/#{@todo}")}>
   <.live_component
     module={TodoAppWeb.TodoLive.FormComponent}
