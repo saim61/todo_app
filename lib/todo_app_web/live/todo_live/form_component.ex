@@ -42,9 +42,9 @@ defmodule TodoAppWeb.TodoLive.FormComponent do
           <%= for entry <- @uploads.external_files.entries do  %>
             <p><%= entry.client_name %></p>
             <img class="w-6 h-6" src="https://p7.hiclipart.com/preview/212/1015/805/computer-icons-x-mark-clip-art-counter.jpg" phx-target={@myself} phx-click="cancel-upload" phx-value-ref={entry.ref}/>
-          <% end %>
-          <%= for err <- upload_errors(@uploads.external_files) do %>
-            <p class="alert alert-danger"><%= to_string(err) %></p>
+            <%= for err <- upload_errors(@uploads.external_files, entry) do %>
+              <p class="text-red-500 font-bold"><%= error_to_string(err) %></p>
+            <% end %>
           <% end %>
         </div>
         <:actions>
@@ -118,4 +118,9 @@ defmodule TodoAppWeb.TodoLive.FormComponent do
   def handle_event("cancel-upload", %{"ref" => ref}, socket) do
     {:noreply, cancel_upload(socket, :external_files, ref)}
   end
+
+  defp error_to_string(:too_large), do: "File size is too large"
+  defp error_to_string(:not_accepted), do: "You have selected an unacceptable file type"
+  defp error_to_string(:too_many_files), do: "You have selected too many files. Please upload max 5 files"
+  defp error_to_string(x), do: "Some unknown error: #{x}"
 end
