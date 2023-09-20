@@ -43,6 +43,9 @@ defmodule TodoAppWeb.TodoLive.FormComponent do
             <p><%= entry.client_name %></p>
             <img class="w-6 h-6" src="https://p7.hiclipart.com/preview/212/1015/805/computer-icons-x-mark-clip-art-counter.jpg" phx-target={@myself} phx-click="cancel-upload" phx-value-ref={entry.ref}/>
           <% end %>
+          <%= for err <- upload_errors(@uploads.external_files) do %>
+            <p class="alert alert-danger"><%= to_string(err) %></p>
+          <% end %>
         </div>
         <:actions>
           <.button phx-disable-with="Saving...">Save Todo</.button>
