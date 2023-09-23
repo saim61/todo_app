@@ -5,7 +5,7 @@ defmodule TodoApp.Items.Todo do
   alias TodoApp.Accounts.User
 
   schema "todos" do
-    field(:date, :date, default: Date.utc_today())
+    field(:date, :date, default: Date.utc_today() |> Date.add(3))
     field(:description, :string)
     field(:priority, Ecto.Enum, values: [:low, :medium, :high], default: :low)
     field(:title, :string)
