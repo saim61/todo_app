@@ -9,21 +9,28 @@ defmodule TodoAppWeb.TodoLive.Show do
     TodoAppWeb.Endpoint.subscribe(topic(id))
 
     current_user = Accounts.get_user_by_session_token(user_token)
-    todo = Items.get_todo!(id)
-
-    default_changeset =
-      Comment.changeset(%Comment{}, %{user_id: current_user.id, todo_id: todo.id})
 
     {
       :ok,
       socket
       |> assign(:current_user, current_user)
-      |> assign(:page_title, page_title(socket.assigns.live_action))
-      |> assign(:todo, todo)
-      |> assign(:default_changeset, default_changeset)
-      |> assign(:comment_changeset, default_changeset)
-      |> assign(:comments, Comments.get_all_comments(todo.id))
     }
+  end
+
+  @impl true
+  def handle_params(%{"id" => id}, _uri, %{assigns: %{current_user: current_user}} = socket) do
+    todo = Items.get_todo!(id)
+
+    default_changeset =
+      Comment.changeset(%Comment{}, %{user_id: current_user.id, todo_id: todo.id})
+
+    {:noreply,
+     socket
+     |> assign(:page_title, page_title(socket.assigns.live_action))
+     |> assign(:todo, todo)
+     |> assign(:default_changeset, default_changeset)
+     |> assign(:comment_changeset, default_changeset)
+     |> assign(:comments, Comments.get_all_comments(todo.id))}
   end
 
   @impl true
@@ -35,7 +42,14 @@ defmodule TodoAppWeb.TodoLive.Show do
     case Comments.create_comment(comment_params) do
       {:ok, comment} ->
         default_state = defaults(socket)
-        TodoAppWeb.Endpoint.broadcast_from(self(), topic(comment.todo_id), "refresh_comments", default_state)
+
+        TodoAppWeb.Endpoint.broadcast_from(
+          self(),
+          topic(comment.todo_id),
+          "refresh_comments",
+          default_state
+        )
+
         send(self(), "load_comments")
         {:noreply, socket}
 
@@ -49,7 +63,14 @@ defmodule TodoAppWeb.TodoLive.Show do
     comment = Comments.get_comment!(comment_id)
     {:ok, _} = Comments.delete_comment(comment)
     default_state = defaults(socket)
-    TodoAppWeb.Endpoint.broadcast_from(self(), topic(comment.todo_id), "refresh_comments", default_state)
+
+    TodoAppWeb.Endpoint.broadcast_from(
+      self(),
+      topic(comment.todo_id),
+      "refresh_comments",
+      default_state
+    )
+
     send(self(), "refresh_comments")
     {:noreply, socket}
   end

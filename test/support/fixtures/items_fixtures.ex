@@ -4,6 +4,8 @@ defmodule TodoApp.ItemsFixtures do
   entities via the `TodoApp.Items` context.
   """
 
+  alias TodoApp.AccountsFixtures
+
   @doc """
   Generate a todo.
   """
@@ -11,10 +13,11 @@ defmodule TodoApp.ItemsFixtures do
     {:ok, todo} =
       attrs
       |> Enum.into(%{
-        date: ~D[2023-09-16],
+        date: ~D[2099-01-01],
         description: "some description",
-        priority: :"low,medium,high",
-        title: "some title"
+        priority: :low,
+        title: "some title",
+        user_id: AccountsFixtures.user_fixture().id
       })
       |> TodoApp.Items.create_todo()
 

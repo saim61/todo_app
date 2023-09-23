@@ -98,6 +98,10 @@ defmodule TodoApp.Items do
     todo
     |> Todo.changeset(attrs)
     |> Repo.update()
+    |> case do
+      {:ok, todo} -> {:ok, Repo.preload(todo, :user)}
+      {:error, changeset} -> {:error, changeset}
+    end
   end
 
   @doc """
