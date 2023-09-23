@@ -4,6 +4,8 @@ defmodule TodoAppWeb.TodoLive.FormComponent do
   alias TodoApp.Items
   alias TodoAppWeb.TodoLive.Shared
 
+  @base_path_uploads "priv/static/uploads"
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -95,7 +97,11 @@ defmodule TodoAppWeb.TodoLive.FormComponent do
 
     files_uploaded =
       consume_uploaded_entries(socket, :external_files, fn %{path: path}, entry ->
-        dest = Path.join("priv/static/uploads", entry.client_name)
+        if !File.dir?(@base_path_uploads) do
+          File.mkdir(@base_path_uploads)
+        end
+
+        dest = Path.join(@base_path_uploads, entry.client_name)
         files_uploaded = files_uploaded ++ dest
         File.cp!(path, dest)
         {:ok, files_uploaded}
@@ -121,6 +127,9 @@ defmodule TodoAppWeb.TodoLive.FormComponent do
 
   defp error_to_string(:too_large), do: "File size is too large"
   defp error_to_string(:not_accepted), do: "You have selected an unacceptable file type"
-  defp error_to_string(:too_many_files), do: "You have selected too many files. Please upload max 5 files"
+
+  defp error_to_string(:too_many_files),
+    do: "You have selected too many files. Please upload max 5 files"
+
   defp error_to_string(x), do: "Some unknown error: #{x}"
 end
